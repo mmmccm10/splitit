@@ -75,11 +75,18 @@ def show_expenses(group_id):
         description = st.text_input("Description")
         amount = st.number_input("Amount (€)", step=0.01, format="%.2f")
         payer_name = st.selectbox("Paid by", names)
+        category = st.selectbox("Category", logic.CATEGORIES)
         date = st.date_input("Date")
         if st.form_submit_button("Add expense"):
             payer_id = member_id_for(members, payer_name)
-            logic.add_expense(group_id, payer_id, description, amount, str(date))
+            logic.add_expense(group_id, payer_id, description, amount, str(date), category)
             st.rerun()
+
+    totals = logic.category_totals(group_id)
+    if len(totals) > 0:
+        st.caption("Total per category")
+        for category, total in totals.items():
+            st.write(category + ": €" + f"{total:.2f}")
 
 
 def show_balances(group_id):
