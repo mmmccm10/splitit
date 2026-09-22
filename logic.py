@@ -66,12 +66,22 @@ def add_expense(group_id, payer_id, description, amount, date):
 
 
 def remove_member(member_id):
-    """Delete one member from their group."""
+    """Delete one member from their group, and the expenses they paid."""
     kept = []
     for member in db.load_table("members"):
         if member["id"] != str(member_id):
             kept.append(member)
     db.save_table("members", kept)
+    remove_member_expenses(member_id)
+
+
+def remove_member_expenses(member_id):
+    """Delete every expense paid by this member."""
+    kept = []
+    for expense in db.load_table("expenses"):
+        if expense["payer_id"] != str(member_id):
+            kept.append(expense)
+    db.save_table("expenses", kept)
 
 
 def compute_shares(amount, member_ids, payer_id):
